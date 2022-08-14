@@ -22,19 +22,21 @@ public class MainMenu {
 
         switch (selectedOption) {
             case 1 : SelectBook.SelectBookWithISBN();
-            break;
+                break;
             case 2 : SelectBook.SelectBookWithName();
                 break;
             case 3 : SelectBook.SelectBookWithYearPublished();
                 break;
             case 4 : SelectBook.SelectBookWithIdNumber();
                 break;
+            case 5 : SelectBook.SelectBookWithAuthor();
+                break;
+            case 6 :
+                System.out.println("Ziyaretiniz icin tesekkur ederiz.");;
+                break;
             default:
                 System.out.println("Gecerli bir secim girin");
 
         }
-
-
-
     }
 }
