@@ -25,7 +25,7 @@ public class SelectBook {
             }
         }
         if(!entryArr[0].equalsIgnoreCase(isbnNumber)){
-            System.out.println("Aradiginiz kitap bulunamadi");
+            System.out.println("ISBN " + isbnNumber + " olan bulunamadi");
             MainMenu.selectOption();
         }
     }
@@ -42,7 +42,7 @@ public class SelectBook {
             }
         }
         if (!entryArr[1].contains(bookName)) {
-            System.out.println("Aradiginiz kitap bulunamadi");
+            System.out.println(bookName + " adinda kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
@@ -59,7 +59,7 @@ public class SelectBook {
             }
         }
         if (!entryArr[3].contains(String.valueOf(yearPublished))){
-            System.out.println("Aradiginiz kitap bulunamadi");
+            System.out.println(yearPublished + " yilinda basilan kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
@@ -77,7 +77,7 @@ public class SelectBook {
             }
         }
         if (entryKey != idNumber) {
-            System.out.println("Aradiginiz kitap bulunamadi");
+            System.out.println("ID number " + idNumber + " olan kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
@@ -94,7 +94,7 @@ public class SelectBook {
             }
         }
         if (!entryArr[2].contains(author)){
-            System.out.println("Aradiginiz kitap bulunamadi");
+            System.out.println(author + "'a ait kitap bulunamadi");
             MainMenu.selectOption();
         }
     }

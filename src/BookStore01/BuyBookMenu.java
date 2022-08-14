@@ -6,6 +6,7 @@ public class BuyBookMenu {
 
     public static void buyMenu() {
         Scanner scanner = new Scanner(System.in);
+        System.out.println();
         System.out.println("Aradiginiz kitap stokta var. Ne yapmak istersiniz.");
         String buyOptionsMenu = "**************************\n " +
                 "1. Kitabi satin al\n " +
