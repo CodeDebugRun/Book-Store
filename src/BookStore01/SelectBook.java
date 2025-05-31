@@ -4,97 +4,117 @@ import java.util.*;
 
 public class SelectBook {
     static Scanner scanner = new Scanner(System.in);
-    static Map<Integer, String> bookListMap = CreateMap.createNewBookList();
-    static Set<Map.Entry<Integer,String>> bookListSet = bookListMap.entrySet();
-
-    static String entryValue;
-    static Integer entryKey;
-    static List<String> entryList = new ArrayList<>();
-    static String [] entryArr;
+    // Initialized as an empty map. Runner will load data into it.
+    public static Map<Integer, Book> bookListMap = new TreeMap<>();
 
     public static void SelectBookWithISBN() {
         System.out.print("ISBN numarasini giriniz : ");
         String isbnNumber = scanner.next();
-        for (Map.Entry<Integer,String> w : bookListSet) {
-            entryValue = w.getValue();
-            entryArr = entryValue.split(", ");
-            if(entryArr[0].contains(isbnNumber)){
-                System.out.println(w.getValue());
-                BuyBookMenu.buyMenu();
+        scanner.nextLine(); // Consume newline
+        boolean found = false;
+        for (Map.Entry<Integer, Book> entry : bookListMap.entrySet()) {
+            Book book = entry.getValue();
+            if (book.getIsbn().equalsIgnoreCase(isbnNumber)) {
+                System.out.println(book);
+                BuyBookMenu.buyMenu(book); // Pass the found book
+                found = true;
                 return;
             }
         }
-        if(!entryArr[0].equalsIgnoreCase(isbnNumber)){
-            System.out.println("ISBN " + isbnNumber + " olan bulunamadi");
+        if (!found) {
+            System.out.println("ISBN " + isbnNumber + " olan kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
+
     public static void SelectBookWithName() {
         System.out.print("Kitap adini giriniz :  ");
-        String bookName = scanner.next();
-        for (Map.Entry<Integer,String> w : bookListSet) {
-            entryValue = w.getValue();
-            entryArr = entryValue.split(", ");
-            if (entryArr[1].contains(bookName)) {
-                System.out.println(w.getValue());
-                BuyBookMenu.buyMenu();
+        String bookName = scanner.nextLine();
+        // No need for the isEmpty check if we consistently use nextLine for string inputs
+        // and consume newlines after nextInt/next/nextDouble.
+        boolean found = false;
+        for (Map.Entry<Integer, Book> entry : bookListMap.entrySet()) {
+            Book book = entry.getValue();
+            if (book.getTitle().toLowerCase().contains(bookName.toLowerCase())) {
+                System.out.println(book);
+                BuyBookMenu.buyMenu(book); // Pass the found book
+                found = true;
                 return;
             }
         }
-        if (!entryArr[1].contains(bookName)) {
+        if (!found) {
             System.out.println(bookName + " adinda kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
+
     public static void SelectBookWithYearPublished() {
         System.out.print("Basim yili giriniz :  ");
-        int yearPublished = scanner.nextInt();
-        for (Map.Entry<Integer,String> w : bookListSet) {
-            entryValue = w.getValue();
-            entryArr = entryValue.split(", ");
-            if (entryArr[3].contains(String.valueOf(yearPublished))) {
-                System.out.println(w.getValue());
-                BuyBookMenu.buyMenu();
+        int yearPublished = 0;
+        if (scanner.hasNextInt()){
+            yearPublished = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+        } else {
+            System.out.println("Gecersiz yil formati.");
+            scanner.nextLine(); // consume invalid input
+            MainMenu.selectOption();
+            return;
+        }
+
+        boolean found = false;
+        for (Map.Entry<Integer, Book> entry : bookListMap.entrySet()) {
+            Book book = entry.getValue();
+            if (book.getYearPublished() == yearPublished) {
+                System.out.println(book);
+                BuyBookMenu.buyMenu(book); // Pass the found book
+                found = true;
                 return;
             }
         }
-        if (!entryArr[3].contains(String.valueOf(yearPublished))){
+        if (!found) {
             System.out.println(yearPublished + " yilinda basilan kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
+
     public static void SelectBookWithIdNumber() {
         System.out.print("ID numarasini giriniz :  ");
-        int idNumber = scanner.nextInt();
-        for (Map.Entry<Integer,String> w : bookListSet) {
-            entryValue = w.getValue();
-            entryKey = w.getKey();
-            entryArr = entryValue.split(", ");
-            if (entryKey == idNumber) {
-                System.out.println(bookListMap.get(entryKey));
-                BuyBookMenu.buyMenu();
-                break;
-            }
+        int idNumber = 0;
+        if(scanner.hasNextInt()){
+            idNumber = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+        } else {
+            System.out.println("Gecersiz ID formati.");
+            scanner.nextLine(); // consume invalid input
+            MainMenu.selectOption();
+            return;
         }
-        if (entryKey != idNumber) {
+
+        Book book = bookListMap.get(idNumber);
+        if (book != null) {
+            System.out.println(book);
+            BuyBookMenu.buyMenu(book); // Pass the found book
+        } else {
             System.out.println("ID number " + idNumber + " olan kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
+
     public static void SelectBookWithAuthor() {
         System.out.print("Yazar adini giriniz :  ");
-        String author = scanner.next();
-        for (Map.Entry<Integer,String> w : bookListSet) {
-            entryValue = w.getValue();
-            entryArr = entryValue.split(", ");
-            if (entryArr[2].contains(author)) {
-                System.out.println(w.getValue());
-                BuyBookMenu.buyMenu();
+        String authorName = scanner.nextLine();
+        boolean found = false;
+        for (Map.Entry<Integer, Book> entry : bookListMap.entrySet()) {
+            Book book = entry.getValue();
+            if (book.getAuthor().toLowerCase().contains(authorName.toLowerCase())) {
+                System.out.println(book);
+                BuyBookMenu.buyMenu(book); // Pass the found book
+                found = true;
                 return;
             }
         }
-        if (!entryArr[2].contains(author)){
-            System.out.println(author + "'a ait kitap bulunamadi");
+        if (!found) {
+            System.out.println(authorName + "'a ait kitap bulunamadi");
             MainMenu.selectOption();
         }
     }
