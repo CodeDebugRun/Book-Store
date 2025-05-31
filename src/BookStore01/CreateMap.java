@@ -28,56 +28,60 @@ public class CreateMap {
             String value = entry.getValue();
             String[] parts = value.split(",\\s*");
 
+            // Declare and initialize with defaults or safe values from parts
+            String isbn = (parts.length > 0) ? parts[0].trim() : "N/A_ISBN";
+            String title = (parts.length > 1) ? parts[1].trim() : "N/A_Title";
+            String author = (parts.length > 2) ? parts[2].trim() : "N/A_Author";
+
+            int yearPublished = 0; // Default
+            double price = 0.0;    // Default
+            int stock = 0;        // Default
+
             try {
-                String isbn = parts[0];
-                String title = parts[1];
-                String author = parts[2];
-                int yearPublished = Integer.parseInt(parts[3]);
-                double price = 0.0; // Default price
-                int stock = 0;     // Default stock
+                // Attempt to parse year, price, stock
+                // These will throw NumberFormatException if parts[index] is not a valid number string
+                // or ArrayIndexOutOfBoundsException if parts.length is too small for a given index.
+
+                if (parts.length > 3) {
+                    yearPublished = Integer.parseInt(parts[3].trim());
+                } else {
+                    // For book 1013, year is present but price/stock are not.
+                    // If year is absolutely mandatory and missing for other entries, this logic might need adjustment.
+                    // For now, if year is missing (parts.length <=3), it remains 0 (default).
+                    // If it's present but not parsable, NumberFormatException will be caught.
+                    if (key != 1013) { // Book 1013 has year, but not price/stock. Others might be more problematic if year is missing.
+                         System.err.println("Warning: Year missing for book ID " + key + " (" + title + "). Using default year 0.");
+                    } else if (parts.length > 3) { // Ensure part[3] exists for 1013 before parsing
+                         yearPublished = Integer.parseInt(parts[3].trim());
+                    } else {
+                        // This means for 1013, parts[3] (year) is missing.
+                        System.err.println("Critical: Year missing for book ID " + key + " (" + title + ") where it was expected. Using default year 0.");
+                    }
+                }
 
                 if (parts.length > 4) {
-                    price = Double.parseDouble(parts[4]);
-                }
-                if (parts.length > 5) {
-                    stock = Integer.parseInt(parts[5]);
-                }
-                // If there are more parts than expected (e.g. book 1005, 1006), they are ignored.
+                    price = Double.parseDouble(parts[4].trim());
+                } // else price remains 0.0 (default)
 
+                if (parts.length > 5) {
+                    stock = Integer.parseInt(parts[5].trim());
+                } // else stock remains 0 (default)
+
+                // If there are more parts than expected (e.g. book 1005, 1006), they are ignored by this logic.
                 bookListMap.put(key, new Book(isbn, title, author, yearPublished, price, stock));
 
             } catch (NumberFormatException e) {
-                System.err.println("Error parsing number for book ID " + key + " (" + title + "): " + e.getMessage() + ". Using default values for price/stock if applicable.");
-                 // Attempt to create book with default price/stock if year was parsed
-                if (parts.length >= 4) {
-                    try {
-                        String isbn = parts[0];
-                        String title = parts[1];
-                        String author = parts[2];
-                        int yearPublished = Integer.parseInt(parts[3]);
-                        bookListMap.put(key, new Book(isbn, title, author, yearPublished, 0.0, 0));
-                    } catch (Exception innerEx) {
-                        System.err.println("Further error creating book object for ID " + key + " even with defaults: " + innerEx.getMessage());
-                    }
-                }
+                // title is now in scope and initialized
+                System.err.println("Error parsing number for book ID " + key + " (" + title + "): " + e.getMessage() + ". Using default values for affected fields.");
+                // Create book with any successfully parsed string fields and default numeric values
+                // yearPublished, price, stock will retain their defaults (0, 0.0, 0) if their specific parsing failed.
+                bookListMap.put(key, new Book(isbn, title, author, yearPublished, price, stock));
             } catch (ArrayIndexOutOfBoundsException e) {
-                 System.err.println("Error parsing data for book ID " + key + ": Not enough data fields. " + e.getMessage() + ". Attempting to create with available data and defaults.");
-                 // Handle cases like book 1013 specifically or if absolutely necessary fields are missing
-                if (parts.length >= 4) { // Minimum: isbn, title, author, year
-                    String isbn = parts[0];
-                    String title = parts[1];
-                    String author = parts[2];
-                    int yearPublished = Integer.parseInt(parts[3]); // Assuming year is always present if length is 4
-                    bookListMap.put(key, new Book(isbn, title, author, yearPublished, 0.0, 0));
-                } else if (parts.length >= 3) { // isbn, title, author - year missing
-                     String isbn = parts[0];
-                     String title = parts[1];
-                     String author = parts[2];
-                     // Year is not available, cannot create a valid book object as per current constructor.
-                     // Or modify Book constructor or use a default year. For now, skip or log error.
-                     System.err.println("Cannot create book for ID " + key + ": year is missing.");
-                }
-                // Add more specific handling if needed
+                // This catch block handles cases where essential parts (e.g., year for a non-1013 book if we made it mandatory) are missing.
+                // title is in scope and initialized.
+                System.err.println("Error (missing data fields) for book ID " + key + " (" + title + "): " + e.getMessage() + ". Using default values for missing fields.");
+                // Create book with what was parsed and defaults.
+                bookListMap.put(key, new Book(isbn, title, author, yearPublished, price, stock));
             }
         }
         return bookListMap;
