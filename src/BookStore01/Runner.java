@@ -6,7 +6,7 @@ package BookStore01;
 public class Runner {
 
     public static void main(String[] args) {
-        // Load books from CSV or get default list, and assign to SelectBook.bookListMap
+        // Load books from CSV or get default list, and assign to SelectBook.bookListMap.
         SelectBook.bookListMap = BookDataManager.loadBooks();
 
         // If bookListMap is empty after load (e.g. books.csv doesn't exist and createDefaultBookList also returned empty or was modified not to return much)
